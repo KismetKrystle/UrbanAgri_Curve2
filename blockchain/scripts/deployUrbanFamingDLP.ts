@@ -1,4 +1,4 @@
-const { ethers } = require("ethers");
+const { ethers, upgrades } = require("ethers");
 const { MultiBAASClient } = require("@curvegrid/multibaas-sdk");
 
 // Configure your MultiBAAS connection
@@ -25,11 +25,17 @@ async function deployContract() {
 
     // Deploy the contract
     const contractFactory = new ethers.ContractFactory(contractABI, ethers.utils.toUtf8Bytes(contractABI), multibaasClient.ethersProvider);
-    const contract = await contractFactory.deploy(
-      contractParams.dlpName,
-      contractParams.description,
-      contractParams.rewardToken,
-      contractParams.communityRewardPerSolution
+    const contract = await upgrades.deployProxy(
+      contractFactory,
+      [
+        contractParams.dlpName,
+        contractParams.description,
+        contractParams.rewardToken,
+        contractParams.communityRewardPerSolution,
+      ],
+      {
+        initializer: "initialize",
+      }
     );
 
     console.log("Contract deployed to:", contract.address);

@@ -3,7 +3,7 @@ import '@nomicfoundation/hardhat-toolbox';
 import 'hardhat-multibaas-plugin';
 import path from 'path';
 
-let deployerPrivateKey = '0x0000000000000000000000000000000000000000000000000000000000000000';
+let deployerPrivateKey = '0x96f37ff80736d91fe5ac616539f918d568ba506ac7c1a4d5d2b02b472e3f89c8';
 let deploymentEndpoint, ethChainID, web3Key, adminApiKey, rpcUrl = '';
 
 if (process.env.HARDHAT_NETWORK) {

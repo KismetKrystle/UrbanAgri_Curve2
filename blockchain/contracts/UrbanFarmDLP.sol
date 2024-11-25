@@ -2,9 +2,21 @@
 pragma solidity ^0.8.0;
 
 import "@vana-dao/dlp-library.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract UrbanFarmDLP is VanaDLP {
+contract UrbanFarmDLP is VanaDLP, UUPSUpgradeable, Ownable2StepUpgradeable, PausableUpgradeable, ReentrancyGuardUpgradeable, MulticallUpgradeable {
+    using SafeERC20 for IERC20;
+    using ECDSA for bytes32;
+    using MessageHashUtils for bytes32;
+
     // Events
     event CommunityDataStored(uint256 indexed communityId, address indexed user);
     event SolutionGenerated(uint256 indexed communityId, string aiSolution, address indexed user);
@@ -49,6 +61,24 @@ contract UrbanFarmDLP is VanaDLP {
         IERC20 _rewardToken,
         uint256 _communityRewardPerSolution
     ) VanaDLP(dlpName, description) {
+        rewardToken = _rewardToken;
+        communityRewardPerSolution = _communityRewardPerSolution;
+    }
+
+    // Initialize function for upgradable contracts
+    function initialize(
+        string memory dlpName,
+        string memory description,
+        IERC20 _rewardToken,
+        uint256 _communityRewardPerSolution
+    ) public onlyInitializing {
+        __VanaDLP_init(dlpName, description);
+        __UUPSUpgradeable_init();
+        __Ownable2Step_init();
+        __Pausable_init();
+        __ReentrancyGuard_init();
+        __MulticallUpgradeable_init();
+
         rewardToken = _rewardToken;
         communityRewardPerSolution = _communityRewardPerSolution;
     }
@@ -107,5 +137,12 @@ contract UrbanFarmDLP is VanaDLP {
     // Retrieve User Interactions
     function getUserInteractions(uint256 communityId) public view returns (UserInteraction[] memory) {
         return userInteractions[communityId];
+    }
+
+    // Upgradable contract functions
+    function _authorizeUpgrade(address newImplementation) internal virtual override onlyOwner {}
+
+    function version() external pure virtual override returns (uint256) {
+        return 1;
     }
 }

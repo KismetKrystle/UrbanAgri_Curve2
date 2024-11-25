@@ -33,7 +33,7 @@ const useMultiBaas = (): MultiBaasHook => {
   // Memoize mbConfig
   const mbConfig = useMemo(() => {
     return new Configuration({
-      basePath: new URL("/api/v0", mbBaseUrl).toString(),
+      basePath: 'https://rv5tmo7fsfbzrjoo4runkrfwae.multibaas.com',
       accessToken: mbApiKey,
     });
   }, [mbBaseUrl, mbApiKey]);

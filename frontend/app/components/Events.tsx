@@ -1,18 +1,19 @@
 "use client";
-import type { UseWaitForTransactionReceiptReturnType } from "wagmi";
-import React, { useEffect, useState, useCallback } from "react";
-import useMultiBaas from "../hooks/useMultiBaas";
 
-interface EventInput {
-  name: string;
-  type: string;
-  value: string;
-}
+import type { UseWaitForTransactionReceiptReturnType } from "wagmi";
+
+import React, { useEffect, useState, useCallback } from "react";
+import UrbanFarmDLPCompiler from "../hooks/UrbanFarmDLPCompiler";
 
 interface EventData {
   event: {
     name: string;
-    inputs: EventInput[];
+    communityId: number;
+    user: string;
+    aiSolution?: string;
+    feedback?: string;
+    action?: string;
+    details?: string;
   };
   triggeredAt: string;
   transaction: {
@@ -25,31 +26,31 @@ interface EventsProps {
 }
 
 const Events: React.FC<EventsProps> = ({ txReceipt }) => {
-  const { getVotedEvents } = useMultiBaas();
+  const urbanFarmDLPCompiler = new UrbanFarmDLPCompiler(
+    "https://api.multibaas.com/api/v0",
+    "YOUR_ACCESS_TOKEN",
+    "0x1234567890123456789012345678901234567890"
+  );
+
   const [events, setEvents] = useState<EventData[]>([]);
   const [isFetching, setIsFetching] = useState<boolean>(false);
 
-  // Wrap fetchEvents with useCallback
   const fetchEvents = useCallback(async () => {
     setIsFetching(true);
     try {
-      const fetchedEvents = await getVotedEvents();
-      if (fetchedEvents) {
-        setEvents(fetchedEvents);
-      }
+      const fetchedEvents = await urbanFarmDLPCompiler.getEvents();
+      setEvents(fetchedEvents);
     } catch (error) {
       console.error("Error fetching events:", error);
     } finally {
       setIsFetching(false);
     }
-  }, [getVotedEvents]);
+  }, [urbanFarmDLPCompiler]);
 
-  // Fetch events on component mount
   useEffect(() => {
     fetchEvents();
   }, []);
 
-  // Fetch events whenever txReceipt changes
   useEffect(() => {
     if (txReceipt) {
       fetchEvents();
@@ -75,11 +76,32 @@ const Events: React.FC<EventsProps> = ({ txReceipt }) => {
                   <strong>{event.event.name}</strong> - {event.triggeredAt}
                 </div>
                 <div className="event-details">
-                  {event.event.inputs.map((input, idx) => (
-                    <p key={idx}>
-                      <strong>{input.name}:</strong> {input.value}
+                  <p>
+                    <strong>Community ID:</strong> {event.event.communityId}
+                  </p>
+                  <p>
+                    <strong>User:</strong> {event.event.user}
+                  </p>
+                  {event.event.aiSolution && (
+                    <p>
+                      <strong>AI Solution:</strong> {event.event.aiSolution}
                     </p>
-                  ))}
+                  )}
+                  {event.event.feedback && (
+                    <p>
+                      <strong>Feedback:</strong> {event.event.feedback}
+                    </p>
+                  )}
+                  {event.event.action && (
+                    <p>
+                      <strong>Action:</strong> {event.event.action}
+                    </p>
+                  )}
+                  {event.event.details && (
+                    <p>
+                      <strong>Details:</strong> {event.event.details}
+                    </p>
+                  )}
                   <p>
                     <strong>Transaction Hash:</strong> {event.transaction.txHash}
                   </p>

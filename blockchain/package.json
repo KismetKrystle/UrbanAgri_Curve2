@@ -10,8 +10,10 @@
     "fix:solhint": "solhint --fix --noPrompt",
     "fix:all": "npm run fix:eslint && npm run fix:prettier && npm run fix:solhint",
     "test": "npx hardhat test",
-    "deploy:voting:dev": "HARDHAT_NETWORK=development npx hardhat run scripts/deploy-mb.ts",
-    "deploy:voting:testing": "HARDHAT_NETWORK=testing npx hardhat run scripts/deploy-mb.ts"
+    "deploy:voting:dev": "npx hardhat run scripts/deploy-mb.ts --network development",
+    "deploy:voting:testing": "HARDHAT_NETWORK=testing npx hardhat run scripts/deploy-mb.ts",
+    "deploy:UrbanFarmDLP:dev": "npx hardhat run scripts/deploy-UrbanFarmingDLP.ts --network development",
+    "dev": "npx hardhat node"
   },
   "repository": {
     "type": "git",
@@ -37,7 +39,7 @@
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",
-    "hardhat": "^2.22.13",
+    "hardhat": "^2.22.16",
     "hardhat-multibaas-plugin": "^0.3.7",
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
@@ -45,5 +47,12 @@
     "prettier-plugin-solidity": "^1.4.1",
     "solhint": "^5.0.3",
     "typescript-eslint": "^7.12.0"
+  },
+  "dependencies": {
+    "@curvegrid/multibaas-sdk": "^1.0.0-beta26",
+    "@openzeppelin/contracts-upgradeable": "^5.1.0",
+    "@types/node": "^22.9.3",
+    "ethers": "^6.13.4",
+    "typescript": "^5.7.2"
   }
 }

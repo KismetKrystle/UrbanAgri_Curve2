@@ -1,26 +1,29 @@
-import hre from 'hardhat';
+import { ethers, upgrades } from 'hardhat';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 async function main() {
-  const signers = await hre.ethers.getSigners();
+  const signers = await ethers.getSigners();
   const signer = signers[0];
 
-  await hre.mbDeployer.setup();
-  const numberOfOptions = 5
-
-  const simpleVoting = await hre.mbDeployer.deploy(signer as SignerWithAddress, 'SimpleVoting', [numberOfOptions], {
-    addressLabel: 'simple_voting',
-    contractVersion: '1.0',
-    contractLabel: 'simple_voting',
-  });
-
-  console.log(
-    `SimpleVoting with ${numberOfOptions} options deployed to ${simpleVoting.contract.target}`,
+  // Deploy the UrbanFarmDLP contract
+  const UrbanFarmDLP = await ethers.getContractFactory('UrbanFarmDLP');
+  const urbanFarmDLP = await upgrades.deployProxy(
+    UrbanFarmDLP,
+    [
+      'Urban Farm DLP', // DLP name
+      'Data Liquidity Pool for Urban Farming', // DLP description
+      '0x123456789012345678901234567890123456789a', // Reward token address
+      ethers.utils.parseEther('1'), // Community reward per solution
+    ],
+    {
+      initializer: 'initialize',
+    }
   );
+
+  await urbanFarmDLP.deployed();
+  console.log('UrbanFarmDLP deployed to:', urbanFarmDLP.address);
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;

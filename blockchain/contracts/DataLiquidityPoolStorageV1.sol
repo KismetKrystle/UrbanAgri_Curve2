@@ -2,8 +2,9 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
+import "./IDataLiquidityPool.sol";
 
-interface IUrbanFarmDLP {
+interface IUrbanFarmDLP is IDataLiquidityPool {
     // Events
     event CommunityDataStored(
         uint256 indexed communityId,

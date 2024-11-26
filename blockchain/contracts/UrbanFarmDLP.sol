@@ -6,16 +6,20 @@ import "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/MulticallUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
+import "./IUrbanFarmDLP.sol";
 import "./DataLiquidityPoolStorageV1.sol";
 import "./VanaDLP.sol";
 
 contract UrbanFarmDLP is
-    VanaDLP,
     UUPSUpgradeable,
     PausableUpgradeable,
     Ownable2StepUpgradeable,
     ReentrancyGuardUpgradeable,
     MulticallUpgradeable,
+    IUrbanFarmDLP,
     DataLiquidityPoolStorageV1
 {
     using SafeERC20 for IERC20;

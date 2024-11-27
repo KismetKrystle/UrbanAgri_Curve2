@@ -1,10 +1,10 @@
-# MultiBaas Sample App
+# UrbanAgri_Curve App
 
-The purpose of this project is to demonstrate how to build a frontend-only decentralized application that uses [MultiBaas](https://docs.curvegrid.com/multibaas/) to handle the complexities of interacting with an EVM smart contract.
+We built our project using [MultiBaas](https://docs.curvegrid.com/multibaas/) to handle the complexities of interacting with an EVM smart contract.
 
 The repository consists of two sub-projects:
 
-- The `blockchain` folder contains a [Hardhat](https://hardhat.org/) project that uses the [Hardhat MultiBaas Plugin](https://github.com/curvegrid/hardhat-multibaas-plugin) to compile the `SimpleVoting` smart contract, deploy it to the network, and link it to a MultiBaas deployment so that we can interact with it via the REST API.
+- The `**blockchain**` folder contains a [Hardhat](https://hardhat.org/) project that uses the [Hardhat MultiBaas Plugin](https://github.com/curvegrid/hardhat-multibaas-plugin) to compile the `UrbanAgriDLP` smart contract, deploy it to the network, and link it to a MultiBaas deployment so that we can interact with it via the REST API.
 - The `frontend` folder contains a Next.js web application that provides a UI for interacting with the smart contract using the [MultiBaas SDK](https://github.com/curvegrid/multibaas-sdk-typescript).
 
 ## MultiBaas Deployment Setup

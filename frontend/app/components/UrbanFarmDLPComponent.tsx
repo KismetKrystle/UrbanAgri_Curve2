@@ -1,25 +1,20 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useAccount, useSendTransaction, useWaitForTransactionReceipt, UseWaitForTransactionReceiptReturnType } from "wagmi";
-import UrbanFarmDLPCompiler from "../hooks/UrbanFarmDLPCompiler";
-import ActionButton from "./ActionButton";
+import { UrbanFarmDLPCompiler } from './UrbanFarmDLPCompiler';
+import ActionButton from './ActionButton';
 
 interface UrbanFarmDLPProps {
+  urbanFarmDLPCompiler: UrbanFarmDLPCompiler;
   setTxReceipt: (receipt: UseWaitForTransactionReceiptReturnType['data']) => void;
 }
 
-const UrbanFarmDLP: React.FC<UrbanFarmDLPProps> = ({ setTxReceipt }) => {
+const UrbanFarmDLP: React.FC<UrbanFarmDLPProps> = ({ urbanFarmDLPCompiler, setTxReceipt }) => {
   const { address, isConnected } = useAccount();
   const { openConnectModal } = useConnectModal();
   const { sendTransactionAsync } = useSendTransaction();
-
-  const urbanFarmDLPCompiler = new UrbanFarmDLPCompiler(
-    "https://api.multibaas.com/api/v0",
-    "YOUR_ACCESS_TOKEN",
-    "0x1234567890123456789012345678901234567890"
-  );
 
   const [communityData, setCommunityData] = useState<any | null>(null);
   const [solutions, setSolutions] = useState<any[]>([]);

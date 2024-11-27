@@ -1,13 +1,15 @@
+'use client';
+
 import React, { useState } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { UrbanFarmDLPCompiler } from './components/UrbanFarmDLPCompiler';
 import UrbanFarmDLPComponent from './components/UrbanFarmDLPComponent';
-import Buttons from './components/Buttons';
-import UrbanFarmDLPCompiler from './hooks/UrbanFarmDLPCompiler';
 
 const UrbanFarmingPage: React.FC = () => {
   const [communityData, setCommunityData] = useState<any | null>(null);
   const [solutions, setSolutions] = useState<any[]>([]);
   const [userInteractions, setUserInteractions] = useState<any[]>([]);
+  const [txReceipt, setTxReceipt] = useState<UseWaitForTransactionReceiptReturnType['data']>();
 
   const urbanFarmDLPCompiler = new UrbanFarmDLPCompiler(
     'https://api.multibaas.com/api/v0',
@@ -55,15 +57,11 @@ const UrbanFarmingPage: React.FC = () => {
       </div>
       <div>
         <UrbanFarmDLPComponent
+          urbanFarmDLPCompiler={urbanFarmDLPCompiler}
+          setTxReceipt={setTxReceipt}
           communityData={communityData}
           solutions={solutions}
           userInteractions={userInteractions}
-        />
-        <Buttons
-          onStoreCommunityData={handleStoreCommunityData}
-          onAddSolution={handleAddSolution}
-          onLogUserInteraction={handleLogUserInteraction}
-          onSubmitFeedback={handleSubmitFeedback}
         />
       </div>
     </div>

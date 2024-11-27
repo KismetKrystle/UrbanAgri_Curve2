@@ -7,6 +7,9 @@ The repository consists of two sub-projects:
 - The `**blockchain**` folder contains a [Hardhat](https://hardhat.org/) project that uses the [Hardhat MultiBaas Plugin](https://github.com/curvegrid/hardhat-multibaas-plugin) to compile the `UrbanAgriDLP` smart contract, deploy it to the network, and link it to a MultiBaas deployment so that we can interact with it via the REST API.
 - The `frontend` folder contains a Next.js web application that provides a UI for interacting with the smart contract using the [MultiBaas SDK](https://github.com/curvegrid/multibaas-sdk-typescript).
 
+  ![image](https://github.com/user-attachments/assets/308ff2be-e9c7-449c-9ab8-d31ab68668a0)
+
+
 ## MultiBaas Deployment Setup
 
 Using the [Curvegrid Console](https://console.curvegrid.com/), create a MultiBaas deployment on the Curvegrid Testnet. We recommend using this network for smart contract development due to its near-instant block finality and easily accessible faucet for account funding. It is also possible to use this demo app on another network, but it will require minor modification and alteration of setup procedure.

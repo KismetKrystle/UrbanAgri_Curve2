@@ -1,33 +1,26 @@
+// components/ActionButton.tsx
 import React from 'react';
 
 interface ActionButtonProps {
   label: string;
-  count?: number;
+  count: number;
   isActive: boolean;
   isDisabled: boolean;
   handleAction: () => void;
 }
 
-const ActionButton: React.FC<ActionButtonProps> = ({
-  label,
-  count,
-  isActive,
-  isDisabled,
-  handleAction
-}) => {
-  const backgroundColor = isActive
-    ? 'bg-button-voted hover:bg-button-clear-vote'
-    : 'bg-button-default hover:bg-button-cast-vote';
-  const cursor = isDisabled ? 'cursor-not-allowed' : 'cursor-pointer';
-
+const ActionButton: React.FC<ActionButtonProps> = ({ label, count, isActive, isDisabled, handleAction }) => {
   return (
-    <button
-      className={`action-button ${backgroundColor} ${cursor}`}
+    <button 
       onClick={handleAction}
       disabled={isDisabled}
+      className={`px-4 py-2 rounded-md transition-colors ${
+        isActive 
+          ? 'bg-blue-500 hover:bg-blue-600 text-white' 
+          : 'bg-gray-300 text-gray-700'
+      } ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
     >
-      {label}
-      {count !== undefined && `: ${count}`}
+      {label} ({count})
     </button>
   );
 };

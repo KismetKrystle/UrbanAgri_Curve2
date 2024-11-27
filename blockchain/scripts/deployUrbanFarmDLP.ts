@@ -1,18 +1,16 @@
-import { deployments, ethers, upgrades } from "hardhat";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
-import { deployProxy, verifyContract, verifyProxy } from "./helpers";
 import { parseEther } from "../utils/helpers";
 
 const implementationContractName = "UrbanFarmDLP";
 const proxyContractName = "UrbanFarmDLPProxy";
-const proxyContractPath = "contracts/dlp/UrbanFarmDLPProxy.sol:UrbanFarmDLPProxy";
+const rewardTokenContractName = "RewardToken";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+  const { ethers, mbDeployer } = hre;
   const [deployer] = await ethers.getSigners();
-  const ownerAddress = process.env.OWNER_ADDRESS ?? deployer.address;
 
-  const rewardTokenContractName = "RewardToken";
+  const ownerAddress = process.env.OWNER_ADDRESS ?? deployer.address;
   const rewardTokenName = process.env.REWARD_TOKEN_NAME ?? "UrbanFarmRewardToken";
   const rewardTokenSymbol = process.env.REWARD_TOKEN_SYMBOL ?? "UFRT";
   const communityRewardPerSolution = process.env.COMMUNITY_REWARD_PER_SOLUTION
@@ -21,51 +19,46 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   console.log("Deploying UrbanFarmDLP contract...");
 
+  // Setup MultiBaas deployer
+  await mbDeployer.setup();
+
   // Deploy the reward token
-  const rewardTokenDeploy = await deployments.deploy(rewardTokenContractName, {
-    from: deployer.address,
-    args: [rewardTokenName, rewardTokenSymbol, deployer.address],
-    log: true,
+  const rewardToken = await mbDeployer.deploy(deployer, rewardTokenContractName, [rewardTokenName, rewardTokenSymbol, deployer.address], {
+    addressLabel: 'urban_farm_reward_token',
+    contractVersion: '1.0',
+    contractLabel: 'urban_farm_reward_token',
   });
-  const rewardToken = await ethers.getContractAt(rewardTokenContractName, rewardTokenDeploy.address);
+
+  console.log(`RewardToken deployed to ${rewardToken.contract.target}`);
 
   // Deploy the UrbanFarmDLP contract
   const params = {
     ownerAddress,
     dlpName: "Urban Farm DLP",
     description: "Data Liquidity Pool for Urban Farming",
-    rewardToken: rewardToken.address,
+    rewardToken: rewardToken.contract.target,
     communityRewardPerSolution,
   };
-  const proxyDeploy = await deployProxy(
-    deployer,
-    proxyContractName,
-    implementationContractName,
-    [params]
-  );
-  const urbanFarmDLP = await ethers.getContractAt(
-    implementationContractName,
-    proxyDeploy.proxyAddress
-  );
+
+  const urbanFarmDLP = await mbDeployer.deployProxy(deployer, implementationContractName, [params], {
+    addressLabel: 'urban_farm_dlp',
+    contractVersion: '1.0',
+    contractLabel: 'urban_farm_dlp',
+    proxyContract: proxyContractName,
+  });
+
+  console.log(`UrbanFarmDLP deployed to ${urbanFarmDLP.contract.target}`);
 
   console.log("Minting and approving reward tokens...");
+
   // Mint and approve reward tokens
-  const txMint = await rewardToken.connect(deployer).mint(deployer.address, parseEther("100000000"));
+  const rewardTokenContract = await ethers.getContractAt(rewardTokenContractName, rewardToken.contract.target);
+  const txMint = await rewardTokenContract.connect(deployer).mint(deployer.address, parseEther("100000000"));
   await txMint.wait();
-  const txApprove = await rewardToken.connect(deployer).approve(urbanFarmDLP.address, parseEther("1000000"));
+  const txApprove = await rewardTokenContract.connect(deployer).approve(urbanFarmDLP.contract.target, parseEther("1000000"));
   await txApprove.wait();
 
-  // Verify the contracts
-  await verifyContract(rewardTokenDeploy.address, [rewardTokenName, rewardTokenSymbol, deployer.address]);
-  await verifyProxy(
-    proxyDeploy.proxyAddress,
-    proxyDeploy.implementationAddress,
-    proxyDeploy.initializeData,
-    proxyContractPath
-  );
-
-  console.log("UrbanFarmDLP deployed to:", urbanFarmDLP.address);
-  return;
+  console.log("Deployment completed successfully");
 };
 
 export default func;

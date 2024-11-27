@@ -1,161 +1,120 @@
-'use client';
-
-import React, { useState, useEffect, useCallback } from "react";
-import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { useAccount, useSendTransaction, useWaitForTransactionReceipt, UseWaitForTransactionReceiptReturnType } from "wagmi";
+// components/UrbanFarmDLPComponent.tsx
+import React, { useState } from 'react';
+import { useAccount } from 'wagmi';
 import { UrbanFarmDLPCompiler } from './UrbanFarmDLPCompiler';
 import ActionButton from './ActionButton';
+import { UseWaitForTransactionReceiptReturnType } from 'wagmi';
 
-interface UrbanFarmDLPProps {
+interface UrbanFarmDLPComponentProps {
   urbanFarmDLPCompiler: UrbanFarmDLPCompiler;
   setTxReceipt: (receipt: UseWaitForTransactionReceiptReturnType['data']) => void;
+  communityData: any | null;
+  setCommunityData: React.Dispatch<React.SetStateAction<any | null>>;
+  solutions: any[];
+  setSolutions: React.Dispatch<React.SetStateAction<any[]>>;
+  userInteractions: any[];
+  setUserInteractions: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
-const UrbanFarmDLP: React.FC<UrbanFarmDLPProps> = ({ urbanFarmDLPCompiler, setTxReceipt }) => {
-  const { address, isConnected } = useAccount();
-  const { openConnectModal } = useConnectModal();
-  const { sendTransactionAsync } = useSendTransaction();
-
-  const [communityData, setCommunityData] = useState<any | null>(null);
-  const [solutions, setSolutions] = useState<any[]>([]);
-  const [userInteractions, setUserInteractions] = useState<any[]>([]);
-  const [txHash, setTxHash] = useState<`0x${string}`>();
-  const { data: txReceipt, isLoading: isTxProcessing } = useWaitForTransactionReceipt({ hash: txHash });
-
-  const fetchData = useCallback(async () => {
-    if (address) {
-      const data = await urbanFarmDLPCompiler.getCommunityData(1);
-      setCommunityData(data);
-
-      const solutionsData = await urbanFarmDLPCompiler.getSolutions(1);
-      setSolutions(solutionsData);
-
-      const interactions = await urbanFarmDLPCompiler.getUserInteractions(1);
-      setUserInteractions(interactions);
-    }
-  }, [address, urbanFarmDLPCompiler]);
-
-  useEffect(() => {
-    if (isConnected) {
-      fetchData();
-    }
-  }, [isConnected, txReceipt, fetchData]);
-
-  useEffect(() => {
-    if (txReceipt) {
-      setTxReceipt(txReceipt);
-    }
-  }, [txReceipt, setTxReceipt]);
+const UrbanFarmDLPComponent: React.FC<UrbanFarmDLPComponentProps> = ({
+  urbanFarmDLPCompiler,
+  setTxReceipt,
+  communityData,
+  setCommunityData,
+  solutions,
+  setSolutions,
+  userInteractions,
+  setUserInteractions
+}) => {
+  const { isConnected } = useAccount();
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleStoreCommunityData = async () => {
-    if (!isConnected) {
-      openConnectModal?.();
-      return;
-    }
-
+    if (!isConnected) return;
+    setIsProcessing(true);
     try {
-      const tx = await urbanFarmDLPCompiler.storeCommunityData(
-        "geoData",
-        "demographicData",
-        "agriculturalData",
-        "hydroponicData"
-      );
-      const hash = await sendTransactionAsync(tx);
-      setTxHash(hash);
+      await urbanFarmDLPCompiler.storeCommunityData("geoData", "demographicData", "agriculturalData", "hydroponicData");
+      const data = await urbanFarmDLPCompiler.getCommunityData(1);
+      setCommunityData(data);
+      console.log("Community data stored successfully");
     } catch (error) {
       console.error("Error storing community data:", error);
     }
+    setIsProcessing(false);
   };
 
   const handleAddSolution = async () => {
-    if (!isConnected) {
-      openConnectModal?.();
-      return;
-    }
-
+    if (!isConnected) return;
+    setIsProcessing(true);
     try {
-      const tx = await urbanFarmDLPCompiler.addSolution(1, "aiSolution");
-      const hash = await sendTransactionAsync(tx);
-      setTxHash(hash);
+      await urbanFarmDLPCompiler.addSolution(1, "AI generated solution");
+      const solutionsData = await urbanFarmDLPCompiler.getSolutions(1);
+      setSolutions(solutionsData);
+      console.log("Solution added successfully");
     } catch (error) {
       console.error("Error adding solution:", error);
     }
+    setIsProcessing(false);
   };
 
   const handleLogUserInteraction = async () => {
-    if (!isConnected) {
-      openConnectModal?.();
-      return;
-    }
-
+    if (!isConnected) return;
+    setIsProcessing(true);
     try {
-      const tx = await urbanFarmDLPCompiler.logUserInteraction(1, "action", "details");
-      const hash = await sendTransactionAsync(tx);
-      setTxHash(hash);
+      await urbanFarmDLPCompiler.logUserInteraction(1, "action", "details");
+      const interactions = await urbanFarmDLPCompiler.getUserInteractions(1);
+      setUserInteractions(interactions);
+      console.log("User interaction logged successfully");
     } catch (error) {
       console.error("Error logging user interaction:", error);
     }
+    setIsProcessing(false);
   };
 
   const handleSubmitFeedback = async () => {
-    if (!isConnected) {
-      openConnectModal?.();
-      return;
-    }
-
+    if (!isConnected) return;
+    setIsProcessing(true);
     try {
-      const tx = await urbanFarmDLPCompiler.submitFeedback(1, "feedback");
-      const hash = await sendTransactionAsync(tx);
-      setTxHash(hash);
+      await urbanFarmDLPCompiler.submitFeedback(1, "User feedback");
+      console.log("Feedback submitted successfully");
     } catch (error) {
       console.error("Error submitting feedback:", error);
     }
+    setIsProcessing(false);
   };
 
   return (
-    <div className="container">
-      <h1 className="title">UrbanFarmDLP</h1>
-      {!isConnected ? (
-        <div className="text-center">Please connect your wallet to interact with UrbanFarmDLP</div>
-      ) : (
-        <div className="spinner-parent">
-          <ActionButton
-            label="Store Community Data"
-            count={communityData?.id || 0}
-            isActive={communityData !== null}
-            isDisabled={isTxProcessing}
-            handleAction={handleStoreCommunityData}
-          />
-          <ActionButton
-            label="Add Solution"
-            count={solutions.length}
-            isActive={solutions.length > 0}
-            isDisabled={isTxProcessing}
-            handleAction={handleAddSolution}
-          />
-          <ActionButton
-            label="Log User Interaction"
-            count={userInteractions.length}
-            isActive={userInteractions.length > 0}
-            isDisabled={isTxProcessing}
-            handleAction={handleLogUserInteraction}
-          />
-          <ActionButton
-            label="Submit Feedback"
-            count={0}
-            isActive={false}
-            isDisabled={isTxProcessing}
-            handleAction={handleSubmitFeedback}
-          />
-          {isTxProcessing && (
-            <div className="overlay">
-              <div className="spinner"></div>
-            </div>
-          )}
-        </div>
-      )}
+    <div className="space-y-4">
+      <ActionButton 
+        label="Store Community Data"
+        count={communityData ? 1 : 0}
+        isActive={isConnected}
+        isDisabled={isProcessing}
+        handleAction={handleStoreCommunityData}
+      />
+      <ActionButton 
+        label="Add Solution"
+        count={solutions.length}
+        isActive={isConnected}
+        isDisabled={isProcessing}
+        handleAction={handleAddSolution}
+      />
+      <ActionButton 
+        label="Log User Interaction"
+        count={userInteractions.length}
+        isActive={isConnected}
+        isDisabled={isProcessing}
+        handleAction={handleLogUserInteraction}
+      />
+      <ActionButton 
+        label="Submit Feedback"
+        count={0} // You might want to track this separately if needed
+        isActive={isConnected}
+        isDisabled={isProcessing}
+        handleAction={handleSubmitFeedback}
+      />
     </div>
   );
 };
 
-export default UrbanFarmDLP;
+export default UrbanFarmDLPComponent;

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { UrbanFarmDLPCompiler } from './components/UrbanFarmDLPCompiler';
 import UrbanFarmDLPComponent from './components/UrbanFarmDLPComponent';
+import { UseWaitForTransactionReceiptReturnType } from 'wagmi'; // Make sure to import this
 
 const UrbanFarmingPage: React.FC = () => {
   const [communityData, setCommunityData] = useState<any | null>(null);
@@ -17,37 +18,8 @@ const UrbanFarmingPage: React.FC = () => {
     '0x1234567890123456789012345678901234567890'
   );
 
-  const handleStoreCommunityData = async (
-    geoData: string,
-    demographicData: string,
-    agriculturalData: string,
-    hydroponicData: string
-  ) => {
-    await urbanFarmDLPCompiler.storeCommunityData(
-      geoData,
-      demographicData,
-      agriculturalData,
-      hydroponicData
-    );
-    const data = await urbanFarmDLPCompiler.getCommunityData(1);
-    setCommunityData(data);
-  };
-
-  const handleAddSolution = async (aiSolution: string) => {
-    await urbanFarmDLPCompiler.addSolution(1, aiSolution);
-    const solutionsData = await urbanFarmDLPCompiler.getSolutions(1);
-    setSolutions(solutionsData);
-  };
-
-  const handleLogUserInteraction = async (action: string, details: string) => {
-    await urbanFarmDLPCompiler.logUserInteraction(1, action, details);
-    const interactions = await urbanFarmDLPCompiler.getUserInteractions(1);
-    setUserInteractions(interactions);
-  };
-
-  const handleSubmitFeedback = async (feedback: string) => {
-    await urbanFarmDLPCompiler.submitFeedback(1, feedback);
-  };
+  // We'll move these handlers to the UrbanFarmDLPComponent
+  // Remove handleStoreCommunityData, handleAddSolution, handleLogUserInteraction, and handleSubmitFeedback from here
 
   return (
     <div>
@@ -60,8 +32,11 @@ const UrbanFarmingPage: React.FC = () => {
           urbanFarmDLPCompiler={urbanFarmDLPCompiler}
           setTxReceipt={setTxReceipt}
           communityData={communityData}
+          setCommunityData={setCommunityData}
           solutions={solutions}
+          setSolutions={setSolutions}
           userInteractions={userInteractions}
+          setUserInteractions={setUserInteractions}
         />
       </div>
     </div>

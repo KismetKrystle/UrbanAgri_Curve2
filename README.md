@@ -1,6 +1,7 @@
-# UrbanAgri_Curve App
-![image](https://github.com/user-attachments/assets/f186780a-c2ba-4a22-90ae-4080e9a6c7c5)
+# UrbanAgri DAO
+![image](https://github.com/user-attachments/assets/2c2e959a-4df2-461f-beba-1c043ea0210d)
 
+Retrieving,Analyzing and Summarizing world Data to improve our understanding of the community conditions and generate customized urban Farming solutions for the particular area.
 
 We built our project using [MultiBaas](https://docs.curvegrid.com/multibaas/) to handle the complexities of interacting with an EVM smart contract.
 
@@ -11,6 +12,9 @@ The repository consists of two sub-projects:
  
 
 ## About the Project
+
+<img width="677" alt="image" src="https://github.com/user-attachments/assets/6a0a6c68-dde7-4684-850f-1a560e385e43">
+
 
 Sustainable urban farming solutions are crucial for our future. UrbanAgri_Curve 🌿 is the essential platform for anyone ready to revolutionize urban agriculture. Whether you're a city dweller, community organizer, or urban planning enthusiast, UrbanAgri_Curve makes data-driven urban farming accessible, engaging, and rewarding for all.
 

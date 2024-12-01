@@ -10714,5 +10714,8 @@
         "url": "https://github.com/sponsors/sindresorhus"
       }
     }
+  },
+  "dependencies": {
+    "multibaas-sample-hardhat-project": "file:"
   }
 }

@@ -16,5 +16,8 @@
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
+  },
+  "dependencies": {
+    "my-project": "file:"
   }
 }

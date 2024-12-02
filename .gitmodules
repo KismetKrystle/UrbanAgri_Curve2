@@ -1,0 +1,4 @@
+[submodule "Apps/UrbanAgri_Curve2"]
+    path = Apps/UrbanAgri_Curve2
+    url = https://github.com/KismetKrystle/UrbanAgri_Curve2.git
+
